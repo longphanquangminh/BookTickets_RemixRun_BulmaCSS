@@ -1,11 +1,12 @@
 import { useState } from "react";
 import "../assets/video27_dat_ve_phim/BaiTapBookingTicket.css";
 import "./BookingPage.css";
-import { danhSachGhe } from "~/assets/video27_dat_ve_phim/danhSachGhe";
+import danhSachGhe from "../assets/video27_dat_ve_phim/danhSachGhe.json";
 import type { danhSachGheType } from "~/types/danhSachGheType";
 import type { hangVaDanhSachType } from "~/types/hangVaDanhSachType";
 
 export default function BookingPage() {
+  console.log(danhSachGhe);
   const [customerName, setCustomerName] = useState<string>("");
   const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
   const [openToSelect, setOpenToSelect] = useState<boolean>(false);
