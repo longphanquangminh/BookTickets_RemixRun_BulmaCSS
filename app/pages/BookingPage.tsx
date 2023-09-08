@@ -26,6 +26,14 @@ export default function BookingPage() {
     }
   };
   const [confirmSelection, setConfirmSelection] = useState<boolean>(false);
+  const handleConfirm = () => {
+    if (numberOfSeats === selectedCheckboxes.length) {
+      setConfirmSelection(true);
+      setOpenToSelect(false);
+    } else {
+      alert(`Vui lòng book vừa đủ ${numberOfSeats} ghế`);
+    }
+  };
   return (
     <section id='booking-background' className='hero is-fullheight is-relative'>
       <div id='our-overlay' className='hero is-fullheight has-background-black'></div>
@@ -41,8 +49,8 @@ export default function BookingPage() {
               <div className='field'>
                 <p className='control'>
                   <input
-                    disabled={openToSelect}
-                    readOnly={openToSelect}
+                    disabled={openToSelect || confirmSelection}
+                    readOnly={openToSelect || confirmSelection}
                     className='input'
                     type='text'
                     placeholder='Name'
@@ -52,7 +60,6 @@ export default function BookingPage() {
               </div>
             </div>
           </div>
-
           <div className='field is-horizontal'>
             <div className='field-label is-normal'>
               <label className='label has-text-white'>Seats</label>
@@ -61,8 +68,8 @@ export default function BookingPage() {
               <div className='field'>
                 <p className='control'>
                   <input
-                    disabled={openToSelect}
-                    readOnly={openToSelect}
+                    disabled={openToSelect || confirmSelection}
+                    readOnly={openToSelect || confirmSelection}
                     className='input'
                     type='number'
                     min='1'
@@ -74,7 +81,7 @@ export default function BookingPage() {
             </div>
           </div>
           <div className='is-flex is-justify-content-center'>
-            <button className='button is-link is-rounded' onClick={() => handleSelect()}>
+            <button className='button is-link is-rounded' onClick={handleSelect} disabled={openToSelect || confirmSelection}>
               Start selecting
             </button>
           </div>
@@ -128,7 +135,7 @@ export default function BookingPage() {
                           type='checkbox'
                           className='is-hidden'
                           value={itemGhe.soGhe}
-                          disabled={itemGhe.daDat || itemGhe.gia <= 0}
+                          disabled={openToSelect == false || itemGhe.daDat || itemGhe.gia <= 0}
                         />
                       </td>
                     ))}
@@ -139,11 +146,10 @@ export default function BookingPage() {
           </div>
           <div className='my-3 has-text-black content is-large p-3 has-background-warning has-text-centered'>SCREEN THIS WAY</div>
           <div className='is-flex is-justify-content-center'>
-            <button disabled={!openToSelect} className='button is-link is-rounded' onClick={() => setConfirmSelection(true)}>
+            <button disabled={!openToSelect} className='button is-link is-rounded' onClick={handleConfirm}>
               Confirm selection
             </button>
           </div>
-
           <div className='table-container mt-3'>
             <table className='table is-bordered is-striped is-narrow is-hoverable is-fullwidth'>
               <thead>
@@ -157,7 +163,10 @@ export default function BookingPage() {
                 <tr>
                   <th>{confirmSelection && customerName}</th>
                   <td>{confirmSelection && numberOfSeats}</td>
-                  <td></td>
+                  <td>
+                    {confirmSelection &&
+                      selectedCheckboxes.sort().map((item: string, index: number) => (index === selectedCheckboxes.length - 1 ? item : item + ", "))}
+                  </td>
                 </tr>
               </tbody>
             </table>
