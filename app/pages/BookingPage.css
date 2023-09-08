@@ -1,0 +1,27 @@
+#booking-background {
+  background-image: url("../assets/video27_dat_ve_phim/bgmovie.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}
+
+#our-overlay {
+  opacity: 0.75;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#seatsBlock {
+  border: none;
+}
+
+.seats {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
