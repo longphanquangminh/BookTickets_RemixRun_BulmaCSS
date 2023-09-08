@@ -1,39 +1,12 @@
-import { useState } from "react";
 import "../assets/video27_dat_ve_phim/BaiTapBookingTicket.css";
 import "./BookingPage.css";
 import danhSachGhe from "../assets/video27_dat_ve_phim/danhSachGhe.json";
 import type { danhSachGheType } from "~/types/danhSachGheType";
 import type { hangVaDanhSachType } from "~/types/hangVaDanhSachType";
+import { connect } from "react-redux";
+import { CHAIR_CHANGES, CHANGE_CUSTOMER_NAME, CHANGE_NUMBER_OF_SEATS, CONFIRM_BOOKING, START_SELECTING } from "~/constants/bookingConstants";
 
-export default function BookingPage() {
-  const [customerName, setCustomerName] = useState<string>("");
-  const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
-  const [openToSelect, setOpenToSelect] = useState<boolean>(false);
-  const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]);
-  const handleCheckboxChange = (label: string) => {
-    if (selectedCheckboxes.includes(label)) {
-      setSelectedCheckboxes(selectedCheckboxes.filter(item => item !== label));
-    } else {
-      setSelectedCheckboxes([...selectedCheckboxes, label]);
-    }
-  };
-  const handleSelect = () => {
-    if (customerName == "" || numberOfSeats <= 0) {
-      alert("Tên ko để trống và số ghế >= 1 bạn iu nhé! Nhắc thế thôi");
-      setOpenToSelect(false);
-    } else {
-      setOpenToSelect(true);
-    }
-  };
-  const [confirmSelection, setConfirmSelection] = useState<boolean>(false);
-  const handleConfirm = () => {
-    if (numberOfSeats === selectedCheckboxes.length) {
-      setConfirmSelection(true);
-      setOpenToSelect(false);
-    } else {
-      alert(`Vui lòng book vừa đủ ${numberOfSeats} ghế`);
-    }
-  };
+function BookingPage(props: any) {
   return (
     <section id='booking-background' className='hero is-fullheight is-relative'>
       <div id='our-overlay' className='hero is-fullheight has-background-black'></div>
@@ -49,12 +22,12 @@ export default function BookingPage() {
               <div className='field'>
                 <p className='control'>
                   <input
-                    disabled={openToSelect || confirmSelection}
-                    readOnly={openToSelect || confirmSelection}
+                    disabled={props.openToSelect || props.confirmSelection}
+                    readOnly={props.openToSelect || props.confirmSelection}
                     className='input'
                     type='text'
                     placeholder='Name'
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomerName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => props.handleChangeCustomerName(e.target.value)}
                   />
                 </p>
               </div>
@@ -68,20 +41,20 @@ export default function BookingPage() {
               <div className='field'>
                 <p className='control'>
                   <input
-                    disabled={openToSelect || confirmSelection}
-                    readOnly={openToSelect || confirmSelection}
+                    disabled={props.openToSelect || props.confirmSelection}
+                    readOnly={props.openToSelect || props.confirmSelection}
                     className='input'
                     type='number'
                     min='1'
                     placeholder='Number of Seats'
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNumberOfSeats(parseInt(e.target.value))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => props.handleChangeNumberOfSeats(parseInt(e.target.value))}
                   />
                 </p>
               </div>
             </div>
           </div>
           <div className='is-flex is-justify-content-center'>
-            <button className='button is-link is-rounded' onClick={handleSelect} disabled={openToSelect || confirmSelection}>
+            <button className='button is-link is-rounded' onClick={props.handleSelect} disabled={props.openToSelect || props.confirmSelection}>
               Start selecting
             </button>
           </div>
@@ -105,7 +78,9 @@ export default function BookingPage() {
               </div>
             </div>
           </div>
-          {openToSelect && <div className='my-3 has-text-black content has-background-warning has-text-centered'>Please Select your Seats NOW!</div>}
+          {props.openToSelect && (
+            <div className='my-3 has-text-black content has-background-warning has-text-centered'>Please Select your Seats NOW!</div>
+          )}
           <div className='table-container'>
             <table cellSpacing='0' cellPadding='0' id='seatsBlock' className='table mx-auto'>
               <thead>
@@ -124,18 +99,18 @@ export default function BookingPage() {
                       <td key={`itemGhe-${indexChild}`}>
                         <label
                           className={`is-inline-block seats ${itemGhe.daDat || itemGhe.gia <= 0 ? "has-background-danger" : ""} ${
-                            selectedCheckboxes.includes(itemGhe.soGhe) ? "has-background-success" : ""
+                            props.selectedCheckboxes.includes(itemGhe.soGhe) ? "has-background-success" : ""
                           }`}
                           htmlFor={`itemDatGhe-${itemGhe.soGhe}`}
                         ></label>
                         <input
                           id={`itemDatGhe-${itemGhe.soGhe}`}
-                          checked={selectedCheckboxes.includes(itemGhe.soGhe)}
-                          onChange={() => handleCheckboxChange(itemGhe.soGhe)}
+                          checked={props.selectedCheckboxes.includes(itemGhe.soGhe)}
+                          onChange={() => props.handleCheckboxChange(itemGhe.soGhe)}
                           type='checkbox'
                           className='is-hidden'
                           value={itemGhe.soGhe}
-                          disabled={openToSelect == false || itemGhe.daDat || itemGhe.gia <= 0}
+                          disabled={props.openToSelect == false || itemGhe.daDat || itemGhe.gia <= 0}
                         />
                       </td>
                     ))}
@@ -146,7 +121,7 @@ export default function BookingPage() {
           </div>
           <div className='my-3 has-text-black content is-large p-3 has-background-warning has-text-centered'>SCREEN THIS WAY</div>
           <div className='is-flex is-justify-content-center'>
-            <button disabled={!openToSelect} className='button is-link is-rounded' onClick={handleConfirm}>
+            <button disabled={!props.openToSelect} className='button is-link is-rounded' onClick={props.handleConfirm}>
               Confirm selection
             </button>
           </div>
@@ -161,11 +136,13 @@ export default function BookingPage() {
               </thead>
               <tbody id='tbodyCustomerSeats'>
                 <tr>
-                  <th>{confirmSelection && customerName}</th>
-                  <td>{confirmSelection && numberOfSeats}</td>
+                  <th>{props.confirmSelection && props.customerName}</th>
+                  <td>{props.confirmSelection && props.numberOfSeats}</td>
                   <td>
-                    {confirmSelection &&
-                      selectedCheckboxes.sort().map((item: string, index: number) => (index === selectedCheckboxes.length - 1 ? item : item + ", "))}
+                    {props.confirmSelection &&
+                      props.selectedCheckboxes
+                        .sort()
+                        .map((item: string, index: number) => (index === props.selectedCheckboxes.length - 1 ? item : item + ", "))}
                   </td>
                 </tr>
               </tbody>
@@ -177,3 +154,53 @@ export default function BookingPage() {
     </section>
   );
 }
+
+let mapStateToProps = (state: any) => {
+  return {
+    customerName: state.bookingReducer.customerName,
+    numberOfSeats: state.bookingReducer.numberOfSeats,
+    openToSelect: state.bookingReducer.openToSelect,
+    confirmSelection: state.bookingReducer.confirmSelection,
+    selectedCheckboxes: state.bookingReducer.selectedCheckboxes,
+  };
+};
+
+let mapDispatchToProps = (dispatch: any) => {
+  return {
+    handleSelect: () => {
+      let action = {
+        type: START_SELECTING,
+      };
+      dispatch(action);
+    },
+    handleConfirm: () => {
+      let action = {
+        type: CONFIRM_BOOKING,
+      };
+      dispatch(action);
+    },
+    handleCheckboxChange: (label: string) => {
+      let action = {
+        type: CHAIR_CHANGES,
+        payload: label,
+      };
+      dispatch(action);
+    },
+    handleChangeCustomerName: (label: string) => {
+      let action = {
+        type: CHANGE_CUSTOMER_NAME,
+        payload: label,
+      };
+      dispatch(action);
+    },
+    handleChangeNumberOfSeats: (label: number) => {
+      let action = {
+        type: CHANGE_NUMBER_OF_SEATS,
+        payload: label,
+      };
+      dispatch(action);
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BookingPage);
