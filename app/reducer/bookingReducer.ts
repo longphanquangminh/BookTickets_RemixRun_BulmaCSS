@@ -70,7 +70,9 @@ export let bookingReducer = (state = initialState, action: BookingAction) => {
       if (tempState.selectedCheckboxes.includes(action.payload)) {
         tempState.selectedCheckboxes = tempState.selectedCheckboxes.filter(item => item !== action.payload);
       } else {
-        tempState.selectedCheckboxes = [...tempState.selectedCheckboxes, action.payload];
+        if (tempState.selectedCheckboxes.length < tempState.numberOfSeats) {
+          tempState.selectedCheckboxes = [...tempState.selectedCheckboxes, action.payload];
+        }
       }
       return { ...tempState };
     }
