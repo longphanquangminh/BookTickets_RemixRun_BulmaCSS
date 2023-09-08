@@ -6,7 +6,6 @@ import type { danhSachGheType } from "~/types/danhSachGheType";
 import type { hangVaDanhSachType } from "~/types/hangVaDanhSachType";
 
 export default function BookingPage() {
-  console.log(danhSachGhe);
   const [customerName, setCustomerName] = useState<string>("");
   const [numberOfSeats, setNumberOfSeats] = useState<number>(0);
   const [openToSelect, setOpenToSelect] = useState<boolean>(false);
