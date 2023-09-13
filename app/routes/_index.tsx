@@ -1,6 +1,6 @@
 import type { V2_MetaFunction } from "@remix-run/node";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { legacy_createStore as createStore } from "redux";
 import BookingPage from "~/pages/BookingPage";
 import { rootReducer } from "~/reducer/rootReducer";
 
